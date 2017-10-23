@@ -108,13 +108,33 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-
+    var sortedUniqs = [];
+    var findUniqs = function(arr){
+      var uniqElements = [];
+      for (var idx = 0; idx <= arr.length - 1; idx++){
+        if (!uniqElements.includes(arr[idx])) uniqElements.push(arr[idx])
+      }
+      return uniqElements
+    }
+    // if sorted, assign 1 for true return from iterator, 0 for false.
+    if (isSorted){ 
+      var results = array.map(function(elem){
+        return iterator(elem) ? 1 : 0
+      });
+      // check uniqueness of true or false values
+      var uniqKeys = findUniqs(results);
+      // pull indicies of uniq booleans, copy values at indicies from original array, and return results
+      uniqKeys.forEach((key, idx) => sortedUniqs.push(array[idx]))
+    } else { // if unsorted, use simple findUniqs() method
+      return findUniqs(array)
+    }
+    return sortedUniqs
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
-    var results = [];
+    var results = []; 
     for (var idx = 0; idx <= collection.length - 1; idx++){
       results.push(iterator(collection[idx]))
     }
