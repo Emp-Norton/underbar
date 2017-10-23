@@ -60,6 +60,15 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    if (collection.constructor.toString().includes("Array")){
+      for (var idx = 0; idx <= collection.length - 1; idx++){
+        iterator(collection[idx], idx, collection);
+      }
+    } else {
+      for (var objKey in collection){
+        iterator(collection[objKey], objKey, collection)
+      }
+    }
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -81,12 +90,20 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    var results = [];
+    for (var idx = 0; idx <= collection.length - 1; idx++){
+      if (test(collection[idx])) results.push(collection[idx])
+    }
+    return results
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
-    // TIP: see if you can re-use _.filter() here, without simply
-    // copying code in and modifying it
+    var results = [];
+    for (var idx = 0; idx <= collection.length - 1; idx++){
+      if (!test(collection[idx])) results.push(collection[idx])
+    }
+    return results
   };
 
   // Produce a duplicate-free version of the array.
