@@ -112,7 +112,12 @@
     var findUniqs = function(arr){
       var uniqElements = [];
       for (var idx = 0; idx <= arr.length - 1; idx++){
-        if (!uniqElements.includes(arr[idx])) uniqElements.push(arr[idx])
+        if (iterator) {
+          if (!uniqElements.includes(iterator(arr[idx]))) uniqElements.push(iterator(arr[idx]))
+        } else {
+          if (!uniqElements.includes(arr[idx])) uniqElements.push(arr[idx])
+        }
+
       }
       return uniqElements
     }
