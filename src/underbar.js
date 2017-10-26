@@ -191,19 +191,17 @@
       startIdx = 0;
     } else {
       accumulator = collection[0];
-      startIdx = 1
+      startIdx = 1;
     }
     for (var idx = startIdx; idx <= collection.length -1; idx++){
         accumulator = iterator(accumulator, collection[idx])
-        result = accumulator
+        result = accumulator;
     }
     return result
   };
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
-    // TIP: Many iteration problems can be most easily expressed in
-    // terms of reduce(). Here's a freebie to demonstrate!
     return _.reduce(collection, function(wasFound, item) {
       if (wasFound) {
         return true;
@@ -215,13 +213,30 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+    if (collection.length < 1) return true 
+    if (iterator){
+      for (var idx = 0; idx < collection.length; idx++){
+        if (!iterator(collection[idx])) return false
+      }
+    } else {
+      for (var idx = 0; idx < collection.length; idx++){
+        if (collection[idx] === false) return false 
+      }
+    }
+  return true
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    var iterator = iterator || function(item){
+      return item
+    }
     // TIP: There's a very clever way to re-use every() here.
+    for (var idx = 0; idx < collection.length; idx++){
+      if (iterator(collection[idx])) return true 
+    }
+    return false 
   };
 
 
@@ -244,6 +259,12 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for (var argIdx = 0; argIdx < arguments.length; argIdx++){
+      obj[Object.keys(arguments[argIdx])] = Object.values(arguments[argIdx])[0]
+      console.log(`Setting ${Object.keys(arguments[argIdx])} = ${Object.values(arguments[argIdx])[0]}`)
+      console.log(obj)
+    }
+    return obj 
   };
 
   // Like extend, but doesn't ever overwrite a key that already
