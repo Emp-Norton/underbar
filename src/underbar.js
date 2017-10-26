@@ -202,12 +202,24 @@
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
+    var result;
+    var checkObj = function(){
+        return _.reduce(collection, function(wasFound, item) {
+        if (wasFound) {
+          return true;
+        }
+        return item === target
+      }, false);
+    }
+    if (collection.constructor.toString().includes("Array")){
+      result = checkObj()
+    } else {
+      for (var key in collection){
+        if (key === target || collection[key] === target) return true
       }
-      return item === target;
-    }, false);
+    return false 
+    }
+  return result
   };
 
 
@@ -233,6 +245,7 @@
       return item
     }
     // TIP: There's a very clever way to re-use every() here.
+    // idea: if !every(false) then some = true
     for (var idx = 0; idx < collection.length; idx++){
       if (iterator(collection[idx])) return true 
     }
@@ -261,8 +274,7 @@
   _.extend = function(obj) {
     for (var argIdx = 0; argIdx < arguments.length; argIdx++){
       obj[Object.keys(arguments[argIdx])] = Object.values(arguments[argIdx])[0]
-      console.log(`Setting ${Object.keys(arguments[argIdx])} = ${Object.values(arguments[argIdx])[0]}`)
-      console.log(obj)
+     // console.log(`Setting ${Object.keys(arguments[argIdx])} = ${Object.values(arguments[argIdx])[0]}`)
     }
     return obj 
   };
@@ -270,7 +282,16 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+     for (var argIdx = 0; argIdx < arguments.length; argIdx++){
+      if (!obj.hasOwnProperty(Object.keys(arguments[argIdx]))){
+        obj[Object.keys(arguments[argIdx])] = Object.values(arguments[argIdx])
+      //  console.log(obj)
+      }
+    }
+    return obj 
   };
+
+
 
 
   /**
