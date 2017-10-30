@@ -223,11 +223,17 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    if (collection.length < 1) return true
-
-    return _.reduce(collection, function(item){
-      return iterator(item)
-    }, false)
+    // if every other test passes, try to reuse reduce here
+    for (var keyIdx = 0; keyIdx < collection.length; keyIdx++){
+      if (iterator){
+        if (!iterator(collection[keyIdx])) return false 
+      } else {
+        for (var keyIdx = 0; keyIdx < collection.length; keyIdx++){
+          if (collection[keyIdx] === false ) return false 
+        }
+      }
+    }
+    return true 
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
@@ -279,13 +285,23 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-     for (var argIdx = 0; argIdx < arguments.length; argIdx++){
-      if (!obj.hasOwnProperty(Object.keys(arguments[argIdx]))){
-        obj[Object.keys(arguments[argIdx])] = Object.values(arguments[argIdx])
-      //  console.log(obj)
+    var newObj = {};
+    var keysAndVals = [];
+    var args = Array.from(arguments);
+    for (var argIdx = 0; argIdx < args.length; argIdx++){
+      for (var keyIdx = 0; keyIdx <= Object.keys(arguments[argIdx]).length - 1; keyIdx++){
+        keysAndVals.push([Object.keys(arguments[argIdx])[keyIdx], Object.values(arguments[argIdx])[keyIdx]])
       }
     }
-    return obj 
+
+    for (var keyValIdx = 0; keyValIdx < keysAndVals.length; keyValIdx++){
+      if (!obj.hasOwnProperty(keysAndVals[keyValIdx])){
+        newObj[keysAndVals[keyValIdx]] = newObj[keysAndVals[keyValIdx+1]]
+      }
+    }
+    console.log("Obj: " + JSON.stringify(obj) + ", KV: " + keysAndVals)
+    console.log(newObj)
+    return newObj
   };
 
 
