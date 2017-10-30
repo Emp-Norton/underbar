@@ -60,7 +60,7 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
-    if (collection.constructor.toString().includes("Array")){
+    if (Array.isArray(collection)){
       for (var idx = 0; idx <= collection.length - 1; idx++){
         iterator(collection[idx], idx, collection);
       }
@@ -109,6 +109,7 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
     var sortedUniqs = [];
+
     var findUniqs = function(arr){
       var uniqElements = [];
       for (var idx = 0; idx <= arr.length - 1; idx++){
@@ -343,8 +344,26 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-  };
+    
+    var stopWatch = function(target, func){
+      var startTime = Date.now();
+     
+      var getDelay = function() {
+        var elapsedTime = Date.now() - startTime;
+        return elapsedTime
+      }
+    
+      while (target > getDelay()){
+        getDelay()    
+      }
+    }
+  
+    var dothething = function(){
+      console.log("function executed")
+    }
 
+  // stopWatch(1200, func)
+  };
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -356,7 +375,23 @@
   // TIP: This function's test suite will ask that you not modify the original
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
+    // rewrite to mimic fisher-yates algorithm -- current approach will be slow with large (10^>3) arrays because the randInd selecting an undefined (deleted) position increases every time.
   _.shuffle = function(array) {
+    var dupArray = array.slice();
+    var shiftedArray = [];
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    while (shiftedArray.length < dupArray.length){
+      var randomIndex = getRandomInt(0, dupArray.length - 1)
+      if (dupArray[randomIndex]){
+        shiftedArray.push(dupArray[randomIndex])
+        delete (dupArray[randomIndex])
+      }
+    }
+    return shiftedArray
   };
 
 
@@ -386,6 +421,27 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var argsArray = Array.from(arguments)
+    var zipped = [];
+
+    var findLengthOfLongestArg = function(args){
+      var bestLength = 0;
+      for (var arg in args){
+        if (args[arg].length > bestLength) bestLength = args[arg].length
+      }
+      return bestLength
+    }
+
+    var maxLength = findLengthOfLongestArg(argsArray);
+    var objectToPush = []
+    for (var idx = 0; idx < maxLength; idx++){
+      for (var argIdx = 0; argIdx <= argsArray.length - 1; argIdx++){
+        objectToPush.push(argsArray[argIdx][idx])
+      }
+      zipped.push(objectToPush)
+      objectToPush = [];
+    }
+    return zipped
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -393,6 +449,17 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var result = [];
+    for (var idx = 0; idx < nestedArray.length; idx++){
+      if (Array.isArray(nestedArray[idx])){
+        for (var nestedIdx = 0; nestedIdx < nestedArray[idx].length; nestedIdx++){
+          result.push(nestedArray[idx][nestedIdx])
+        }
+      } else {
+        result.push(nestedArray[idx])
+      }
+    }
+    return result
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
