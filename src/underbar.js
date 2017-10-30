@@ -186,57 +186,48 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    var result;
-    var startIdx;
-    if (accumulator || arguments.length === 3){
-      startIdx = 0;
-    } else {
-      accumulator = collection[0];
-      startIdx = 1;
-    }
-    for (var idx = startIdx; idx <= collection.length -1; idx++){
+    if (Array.isArray(collection)){
+      var result;
+      var startIdx;
+
+      if (accumulator || arguments.length === 3){
+        startIdx = 0;
+      } else {
+        accumulator = collection[0];
+        startIdx = 1;
+      }
+
+      for (var idx = startIdx; idx <= collection.length - 1; idx++){
         accumulator = iterator(accumulator, collection[idx])
         result = accumulator;
-    }
-    return result
+      }
+      return result
+    } else { 
+        for (var key in collection){
+          accumulator = iterator(accumulator, collection[key])
+        }
+        return accumulator
+      }
   };
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
-    var result;
-    var checkObj = function(){
         return _.reduce(collection, function(wasFound, item) {
         if (wasFound) {
           return true;
         }
         return item === target
       }, false);
-    }
-    if (collection.constructor.toString().includes("Array")){
-      result = checkObj()
-    } else {
-      for (var key in collection){
-        if (key === target || collection[key] === target) return true
-      }
-    return false 
-    }
-  return result
-  };
+    };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    if (collection.length < 1) return true 
-    if (iterator){
-      for (var idx = 0; idx < collection.length; idx++){
-        if (!iterator(collection[idx])) return false
-      }
-    } else {
-      for (var idx = 0; idx < collection.length; idx++){
-        if (collection[idx] === false) return false 
-      }
-    }
-  return true
+    if (collection.length < 1) return true
+
+    return _.reduce(collection, function(item){
+      return iterator(item)
+    }, false)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
@@ -245,7 +236,6 @@
     var iterator = iterator || function(item){
       return item
     }
-    // TIP: There's a very clever way to re-use every() here.
     // idea: if !every(false) then some = true
     for (var idx = 0; idx < collection.length; idx++){
       if (iterator(collection[idx])) return true 
@@ -273,11 +263,17 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    for (var argIdx = 0; argIdx < arguments.length; argIdx++){
-      obj[Object.keys(arguments[argIdx])] = Object.values(arguments[argIdx])[0]
-     // console.log(`Setting ${Object.keys(arguments[argIdx])} = ${Object.values(arguments[argIdx])[0]}`)
+    var keysAndVals = [];
+    var args = Array.from(arguments);
+    for (var argIdx = 0; argIdx < args.length; argIdx++){
+      for (var keyIdx = 0; keyIdx <= Object.keys(arguments[argIdx]).length - 1; keyIdx++){
+        keysAndVals.push([Object.keys(arguments[argIdx])[keyIdx], Object.values(arguments[argIdx])[keyIdx]])
+      }
     }
-    return obj 
+    for (var keyValIdx = 0; keyValIdx < keysAndVals.length; keyValIdx++){
+      obj[keysAndVals[keyValIdx][0]] = keysAndVals[keyValIdx][1]
+    }
+    return obj
   };
 
   // Like extend, but doesn't ever overwrite a key that already
