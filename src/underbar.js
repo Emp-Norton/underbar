@@ -242,11 +242,11 @@
     var iterator = iterator || function(item){
       return item
     }
-    // idea: if !every(false) then some = true
+    var hasTruthy = false;
     for (var idx = 0; idx < collection.length; idx++){
-      if (iterator(collection[idx])) return true 
+      if (iterator(collection[idx])) hasTruthy = true;
     }
-    return false 
+    return hasTruthy
   };
 
 
