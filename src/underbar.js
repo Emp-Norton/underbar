@@ -346,12 +346,10 @@
     var cache = {};
     return function(){
       var key = JSON.stringify(arguments) // why doesn't Array.from(arguments).toString() work here? No K/V pairs? 
-      if (cache[key]){
-        return cache[key] 
-      } else {
+      if (!cache[key]){
         cache[key] = func.apply(null, arguments); 
-        return cache[key]
       }
+      return cache[key]
     }
   };
 
