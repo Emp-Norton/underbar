@@ -286,7 +286,7 @@
   // exists in obj
   _.defaults = function(obj) {
     var keysAndVals = [];
-    var args = Array.from(arguments);
+    var args = Array.from(arguments)
     for (var argIdx = 0; argIdx < args.length; argIdx++){
       for (var keyIdx = 0; keyIdx <= Object.keys(arguments[argIdx]).length - 1; keyIdx++){
         keysAndVals.push([Object.keys(arguments[argIdx])[keyIdx], Object.values(arguments[argIdx])[keyIdx]])
@@ -343,6 +343,16 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var cache = {};
+    return function(){
+      var key = JSON.stringify(arguments) // why doesn't Array.from(arguments).toString() work here? No K/V pairs? 
+      if (cache[key]){
+        return cache[key] 
+      } else {
+        cache[key] = func.apply(null, arguments); 
+        return cache[key]
+      }
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -351,26 +361,9 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
-  _.delay = function(func, wait) {
-    
-    var stopWatch = function(target, func){
-      var startTime = Date.now();
-     
-      var getDelay = function() {
-        var elapsedTime = Date.now() - startTime;
-        return elapsedTime
-      }
-    
-      while (target > getDelay()){
-        getDelay()    
-      }
-    }
-  
-    var dothething = function(){
-      console.log("function executed")
-    }
-
-  // stopWatch(1200, func)
+  _.delay = function(func, wait) {  
+    var args = Array.from(arguments).slice(2, arguments.length)
+    setTimeout(function(){ func.apply(null, args)}, wait);
   };
 
   /**
