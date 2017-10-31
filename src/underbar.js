@@ -285,7 +285,6 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    var newObj = {};
     var keysAndVals = [];
     var args = Array.from(arguments);
     for (var argIdx = 0; argIdx < args.length; argIdx++){
@@ -293,15 +292,12 @@
         keysAndVals.push([Object.keys(arguments[argIdx])[keyIdx], Object.values(arguments[argIdx])[keyIdx]])
       }
     }
-
-    for (var keyValIdx = 0; keyValIdx < keysAndVals.length; keyValIdx++){
-      if (!obj.hasOwnProperty(keysAndVals[keyValIdx])){
-        newObj[keysAndVals[keyValIdx]] = newObj[keysAndVals[keyValIdx+1]]
+    for (var idx = 0; idx < keysAndVals.length; idx++)
+      if (!obj.hasOwnProperty(keysAndVals[idx][0])){
+        obj[keysAndVals[idx][0]] = keysAndVals[idx][1]
       }
-    }
-    console.log("Obj: " + JSON.stringify(obj) + ", KV: " + keysAndVals)
-    console.log(newObj)
-    return newObj
+
+    return obj
   };
 
 
